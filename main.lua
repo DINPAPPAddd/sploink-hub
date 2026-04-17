@@ -136,7 +136,7 @@ DiceTab:CreateButton({
 })
 
 local diceAuto = false
-local diceCooldown = 0.2
+local diceCooldown = 0.000001
 
 DiceTab:CreateToggle({
     Name = "Auto Roll Dice",
