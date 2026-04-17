@@ -67,7 +67,7 @@ createRuneToggle("Roller Rune", function()
 end)
 
 -- =====================
--- GLYPHS (MOVED HERE)
+-- GLYPHS (NOW FIXED TAB)
 -- =====================
 local glyphEnabled = false
 
@@ -88,7 +88,7 @@ GlyphsTab:CreateToggle({
                         remote:InvokeServer()
                     end)
 
-                    task.wait(0.05)
+                    task.wait(0.0000001)
                 end
             end)
         end
@@ -136,7 +136,7 @@ DiceTab:CreateButton({
 })
 
 local diceAuto = false
-local diceCooldown = 0.000001
+local diceCooldown = 0.0001
 
 DiceTab:CreateToggle({
     Name = "Auto Roll Dice",
