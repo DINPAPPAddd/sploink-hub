@@ -127,7 +127,7 @@ AutoTab:CreateToggle({
                         remote:InvokeServer()
                     end)
 
-                    task.wait(0.05)
+                    task.wait(0.00001)
                 end
             end)
         end
@@ -152,7 +152,7 @@ AutoTab:CreateToggle({
                         remote:FireServer()
                     end)
 
-                    task.wait(0.2)
+                    task.wait(0.00001)
                 end
             end)
         end
@@ -177,7 +177,7 @@ AutoTab:CreateToggle({
                         remote:FireServer("Time Machine")
                     end)
 
-                    task.wait(1)
+                    task.wait(0.0001)
                 end
             end)
         end
