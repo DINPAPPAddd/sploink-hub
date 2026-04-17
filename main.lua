@@ -15,6 +15,7 @@ local player = game.Players.LocalPlayer
 local RunesTab = Window:CreateTab("Runes", 4483362458)
 local WorldsTab = Window:CreateTab("Worlds", 4483362458)
 local DiceTab = Window:CreateTab("Dice", 4483362458)
+local GlyphsTab = Window:CreateTab("Glyphs", 4483362458)
 
 -- =====================
 -- RUNES SYSTEM
@@ -66,11 +67,11 @@ createRuneToggle("Roller Rune", function()
 end)
 
 -- =====================
--- GLYPH AUTO CLICKER
+-- GLYPHS (MOVED HERE)
 -- =====================
 local glyphEnabled = false
 
-RunesTab:CreateToggle({
+GlyphsTab:CreateToggle({
     Name = "Auto Roll Glyph",
     CurrentValue = false,
     Callback = function(Value)
@@ -78,7 +79,9 @@ RunesTab:CreateToggle({
 
         if glyphEnabled then
             task.spawn(function()
-                local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RollGlyph")
+                local remote = game:GetService("ReplicatedStorage")
+                    :WaitForChild("Remotes")
+                    :WaitForChild("RollGlyph")
 
                 while glyphEnabled do
                     pcall(function()
@@ -117,12 +120,12 @@ for name, cf in pairs(worlds) do
 end
 
 -- =====================
--- DICE SYSTEM (NEW)
+-- DICE SYSTEM
 -- =====================
+local diceRemote = game:GetService("ReplicatedStorage")
+    :WaitForChild("Remotes")
+    :WaitForChild("Roll")
 
-local diceRemote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Roll")
-
--- Manual roll button
 DiceTab:CreateButton({
     Name = "Roll Dice",
     Callback = function()
@@ -132,9 +135,8 @@ DiceTab:CreateButton({
     end
 })
 
--- Auto roll with cooldown
 local diceAuto = false
-local diceCooldown = 0.0001
+local diceCooldown = 0.2
 
 DiceTab:CreateToggle({
     Name = "Auto Roll Dice",
