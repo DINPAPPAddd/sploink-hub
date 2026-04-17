@@ -14,6 +14,7 @@ local player = game.Players.LocalPlayer
 -- Tabs
 local RunesTab = Window:CreateTab("Runes", 4483362458)
 local WorldsTab = Window:CreateTab("Worlds", 4483362458)
+local DiceTab = Window:CreateTab("Dice", 4483362458)
 
 -- =====================
 -- RUNES SYSTEM
@@ -65,6 +66,33 @@ createRuneToggle("Roller Rune", function()
 end)
 
 -- =====================
+-- GLYPH AUTO CLICKER
+-- =====================
+local glyphEnabled = false
+
+RunesTab:CreateToggle({
+    Name = "Auto Roll Glyph",
+    CurrentValue = false,
+    Callback = function(Value)
+        glyphEnabled = Value
+
+        if glyphEnabled then
+            task.spawn(function()
+                local remote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("RollGlyph")
+
+                while glyphEnabled do
+                    pcall(function()
+                        remote:InvokeServer()
+                    end)
+
+                    task.wait(0.05)
+                end
+            end)
+        end
+    end
+})
+
+-- =====================
 -- TELEPORT SYSTEM
 -- =====================
 local function teleportTo(cf)
@@ -87,3 +115,43 @@ for name, cf in pairs(worlds) do
         end
     })
 end
+
+-- =====================
+-- DICE SYSTEM (NEW)
+-- =====================
+
+local diceRemote = game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("Roll")
+
+-- Manual roll button
+DiceTab:CreateButton({
+    Name = "Roll Dice",
+    Callback = function()
+        pcall(function()
+            diceRemote:FireServer()
+        end)
+    end
+})
+
+-- Auto roll with cooldown
+local diceAuto = false
+local diceCooldown = 0.0001
+
+DiceTab:CreateToggle({
+    Name = "Auto Roll Dice",
+    CurrentValue = false,
+    Callback = function(Value)
+        diceAuto = Value
+
+        if diceAuto then
+            task.spawn(function()
+                while diceAuto do
+                    pcall(function()
+                        diceRemote:FireServer()
+                    end)
+
+                    task.wait(diceCooldown)
+                end
+            end)
+        end
+    end
+})
