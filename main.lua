@@ -183,3 +183,40 @@ AutoTab:CreateToggle({
         end
     end
 })
+-- Anti afk
+local AntiAfkSection = AutoTab:CreateSection("Anti AFK")
+
+local antiAfkEnabled = false
+local antiAfkConnection
+
+AutoTab:CreateToggle({
+    Name = "Anti AFK",
+    CurrentValue = false,
+    Callback = function(Value)
+        antiAfkEnabled = Value
+
+        if antiAfkEnabled then
+            local vu = game:GetService("VirtualUser")
+
+            -- prevent multiple connections stacking
+            if antiAfkConnection then
+                antiAfkConnection:Disconnect()
+            end
+
+            antiAfkConnection = player.Idled:Connect(function()
+                if antiAfkEnabled then
+                    vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+                    task.wait(1)
+                    vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+                end
+            end)
+
+        else
+            -- cleanly disconnect when turned off
+            if antiAfkConnection then
+                antiAfkConnection:Disconnect()
+                antiAfkConnection = nil
+            end
+        end
+    end
+})
