@@ -1,222 +1,252 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
+---------------------------------------------------
+-- SERVICES
+---------------------------------------------------
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+
+local ResetRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Reset")
+local UpgradeRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Upgrade")
+
+---------------------------------------------------
+-- WINDOW (ONLY ONCE)
+---------------------------------------------------
 local Window = Rayfield:CreateWindow({
-    Name = "Sploink hub",
-    LoadingTitle = "Sploink hub",
-    LoadingSubtitle = "by Emilio",
-    ConfigurationSaving = {
-        Enabled = false
-    }
+	Name = "Developer Studio",
+	LoadingTitle = "Loading...",
+	LoadingSubtitle = "All Systems Combined",
+	ConfigurationSaving = { Enabled = false }
 })
 
-local player = game.Players.LocalPlayer
-
--- Tabs
+---------------------------------------------------
+-- TABS
+---------------------------------------------------
+local UpgradesTab = Window:CreateTab("Upgrades", 4483362458)
 local RunesTab = Window:CreateTab("Runes", 4483362458)
-local WorldsTab = Window:CreateTab("Worlds", 4483362458)
 local AutoTab = Window:CreateTab("Auto", 4483362458)
 
 ---------------------------------------------------
--- =====================
--- RUNES SYSTEM
--- =====================
+-- UPGRADES
 ---------------------------------------------------
 
+-- CRYSTALLIZE
+UpgradesTab:CreateSection("Crystallize (HIGHEST)")
+
+UpgradesTab:CreateButton({
+	Name = "Crystallize Reset",
+	Callback = function()
+		ResetRemote:FireServer("Crystallize")
+	end
+})
+
+local crystallizeUpgrades = {
+	{"Coin Multi V","Max","Crystals","Crystals"},
+	{"Time Gain II","Max","Crystals","Crystals"},
+	{"Energy Gain II","Max","Crystals","Crystals"},
+	{"Energy Multi II","Max","Crystals","Crystals"},
+	{"Variant Luck","Max","Crystals","Crystals"},
+	{"Rune Luck III","Max","Crystals","Crystals"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Crystallize Upgrades",
+	Callback = function()
+		for _,v in ipairs(crystallizeUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- ENERGY
+---------------------------------------------------
+UpgradesTab:CreateSection("Energy")
+
+local energyUpgrades = {
+	{"Energy Multi","Max","Energy","Energy"},
+	{"Faster Energy","Max","Energy","Energy"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Energy Upgrades",
+	Callback = function()
+		for _,v in ipairs(energyUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- TIME MACHINE
+---------------------------------------------------
+UpgradesTab:CreateSection("Time Machine")
+
+local timeMachineUpgrades = {
+	{"Time Gain","Max","Time","Time"},
+	{"Turbo Time","Max","Time","Time"},
+	{"Rune Luck II","Max","Time","Time"},
+	{"Rune Bulk II","Max","Time","Time"},
+	{"Rune Speed II","Max","Time","Time"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Time Machine Upgrades",
+	Callback = function()
+		for _,v in ipairs(timeMachineUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- TRANSCENSION
+---------------------------------------------------
+UpgradesTab:CreateSection("Transcension (TP)")
+
+UpgradesTab:CreateButton({
+	Name = "Transcension Reset",
+	Callback = function()
+		ResetRemote:FireServer("Transcension")
+	end
+})
+
+---------------------------------------------------
+-- RUNES
+---------------------------------------------------
 local function createRuneToggle(name, getHitbox)
-    local enabled = false
+	local enabled = false
 
-    RunesTab:CreateToggle({
-        Name = name,
-        CurrentValue = false,
-        Callback = function(Value)
-            enabled = Value
+	RunesTab:CreateToggle({
+		Name = name,
+		CurrentValue = false,
+		Callback = function(Value)
+			enabled = Value
 
-            if enabled then
-                task.spawn(function()
-                    while enabled do
-                        local character = player.Character or player.CharacterAdded:Wait()
-                        local hrp = character:WaitForChild("HumanoidRootPart")
+			if enabled then
+				task.spawn(function()
+					while enabled do
+						local character = player.Character or player.CharacterAdded:Wait()
+						local hrp = character:WaitForChild("HumanoidRootPart")
 
-                        local h = getHitbox()
-                        if h then
-                            firetouchinterest(hrp, h, 0)
-                            firetouchinterest(hrp, h, 1)
-                        end
+						local hitbox = getHitbox()
+						if hitbox then
+							firetouchinterest(hrp, hitbox, 0)
+							firetouchinterest(hrp, hitbox, 1)
+						end
 
-                        task.wait()
-                    end
-                end)
-            end
-        end
-    })
+						task.wait()
+					end
+				end)
+			end
+		end
+	})
 end
 
-createRuneToggle("Qualities Rune", function()
-    return workspace.Runes.Qualities:FindFirstChild("Hitbox")
-end)
-
+-- MAIN RUNES
 createRuneToggle("Basic Rune", function()
-    return workspace.Runes:FindFirstChild("Basic")
-        and workspace.Runes["Basic"]:FindFirstChild("Hitbox")
-end)
-
-createRuneToggle("250K Rune", function()
-    return workspace.Runes:FindFirstChild("250K")
-        and workspace.Runes["250K"]:FindFirstChild("Hitbox")
+	local r = workspace.Runes:FindFirstChild("Basic")
+	return r and r:FindFirstChild("Hitbox")
 end)
 
 createRuneToggle("Roller Rune", function()
-    return workspace.Runes:FindFirstChild("Roller")
-        and workspace.Runes["Roller"]:FindFirstChild("Hitbox")
+	local r = workspace.Runes:FindFirstChild("Roller")
+	return r and r:FindFirstChild("Hitbox")
+end)
+
+createRuneToggle("Qualities Rune", function()
+	local r = workspace.Runes:FindFirstChild("Qualities")
+	return r and r:FindFirstChild("Hitbox")
+end)
+
+createRuneToggle("Ancient Rune", function()
+	local r = workspace.Runes:FindFirstChild("Ancient")
+	return r and r:FindFirstChild("Hitbox")
+end)
+
+-- EVENT RUNES
+RunesTab:CreateSection("Event Runes")
+
+createRuneToggle("Celebration Rune", function()
+	local r = workspace.Runes:FindFirstChild("Celebration")
+	return r and r:FindFirstChild("Hitbox")
+end)
+
+createRuneToggle("250K Rune", function()
+	local r = workspace.Runes:FindFirstChild("250K")
+	return r and r:FindFirstChild("Hitbox")
 end)
 
 ---------------------------------------------------
--- =====================
--- WORLD TELEPORT SYSTEM
--- =====================
+-- AUTO SYSTEM
 ---------------------------------------------------
-
-local function teleportTo(cf)
-    local character = player.Character or player.CharacterAdded:Wait()
-    local hrp = character:WaitForChild("HumanoidRootPart")
-    hrp.CFrame = cf
-end
-
-local worlds = {
-    ["World 1"] = CFrame.new(-1.5, 0.0897500217, -80.4996796),
-    ["World 2"] = CFrame.new(-257.60437, 0.589749992, -86.4996796),
-    ["World 3"] = CFrame.new(-524, 0.589749992, -75.0002899)
-}
-
-for name, cf in pairs(worlds) do
-    WorldsTab:CreateButton({
-        Name = "Teleport to " .. name,
-        Callback = function()
-            teleportTo(cf)
-        end
-    })
-end
-
----------------------------------------------------
--- =====================
--- AUTO SYSTEM (ALL TOGETHER)
--- =====================
----------------------------------------------------
-
-local AutoSection = AutoTab:CreateSection("Auto")
+AutoTab:CreateSection("Auto")
 
 local glyphEnabled = false
 local diceEnabled = false
 local tempoEnabled = false
 
--- Glyph
 AutoTab:CreateToggle({
-    Name = "Auto Roll Glyph",
-    CurrentValue = false,
-    Callback = function(Value)
-        glyphEnabled = Value
+	Name = "Auto Roll Glyph",
+	CurrentValue = false,
+	Callback = function(Value)
+		glyphEnabled = Value
 
-        if glyphEnabled then
-            task.spawn(function()
-                local remote = game:GetService("ReplicatedStorage")
-                    :WaitForChild("Remotes")
-                    :WaitForChild("RollGlyph")
+		if glyphEnabled then
+			task.spawn(function()
+				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RollGlyph")
 
-                while glyphEnabled do
-                    pcall(function()
-                        remote:InvokeServer()
-                    end)
-
-                    task.wait(0.00001)
-                end
-            end)
-        end
-    end
+				while glyphEnabled do
+					pcall(function()
+						remote:InvokeServer()
+					end)
+					task.wait(2)
+				end
+			end)
+		end
+	end
 })
 
--- Dice
 AutoTab:CreateToggle({
-    Name = "Auto Roll Dice",
-    CurrentValue = false,
-    Callback = function(Value)
-        diceEnabled = Value
+	Name = "Auto Roll Dice",
+	CurrentValue = false,
+	Callback = function(Value)
+		diceEnabled = Value
 
-        if diceEnabled then
-            task.spawn(function()
-                local remote = game:GetService("ReplicatedStorage")
-                    :WaitForChild("Remotes")
-                    :WaitForChild("Roll")
+		if diceEnabled then
+			task.spawn(function()
+				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Roll")
 
-                while diceEnabled do
-                    pcall(function()
-                        remote:FireServer()
-                    end)
-
-                    task.wait(0.00001)
-                end
-            end)
-        end
-    end
+				while diceEnabled do
+					pcall(function()
+						remote:FireServer()
+					end)
+					task.wait(2)
+				end
+			end)
+		end
+	end
 })
 
--- Tempo
 AutoTab:CreateToggle({
-    Name = "Auto Tempo Reset",
-    CurrentValue = false,
-    Callback = function(Value)
-        tempoEnabled = Value
+	Name = "Auto Tempo Reset",
+	CurrentValue = false,
+	Callback = function(Value)
+		tempoEnabled = Value
 
-        if tempoEnabled then
-            task.spawn(function()
-                local remote = game:GetService("ReplicatedStorage")
-                    :WaitForChild("Remotes")
-                    :WaitForChild("Reset")
+		if tempoEnabled then
+			task.spawn(function()
+				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Reset")
 
-                while tempoEnabled do
-                    pcall(function()
-                        remote:FireServer("Time Machine")
-                    end)
-
-                    task.wait(0.0001)
-                end
-            end)
-        end
-    end
-})
--- Anti afk
-local AntiAfkSection = AutoTab:CreateSection("Anti AFK")
-
-local antiAfkEnabled = false
-local antiAfkConnection
-
-AutoTab:CreateToggle({
-    Name = "Anti AFK",
-    CurrentValue = false,
-    Callback = function(Value)
-        antiAfkEnabled = Value
-
-        if antiAfkEnabled then
-            local vu = game:GetService("VirtualUser")
-
-            -- prevent multiple connections stacking
-            if antiAfkConnection then
-                antiAfkConnection:Disconnect()
-            end
-
-            antiAfkConnection = player.Idled:Connect(function()
-                if antiAfkEnabled then
-                    vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-                    task.wait(1)
-                    vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
-                end
-            end)
-
-        else
-            -- cleanly disconnect when turned off
-            if antiAfkConnection then
-                antiAfkConnection:Disconnect()
-                antiAfkConnection = nil
-            end
-        end
-    end
+				while tempoEnabled do
+					pcall(function()
+						remote:FireServer("Time Machine")
+					end)
+					task.wait(2)
+				end
+			end)
+		end
+	end
 })
