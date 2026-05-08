@@ -272,7 +272,7 @@ AutoTab:CreateToggle({
 				pcall(function()
 					remote:FireServer()
 				end)
-				task.wait(2)
+				task.wait(0.0001)
 			end
 		end)
 	end
@@ -289,7 +289,7 @@ AutoTab:CreateToggle({
 				pcall(function()
 					remote:InvokeServer()
 				end)
-				task.wait(2)
+				task.wait(0.001)
 			end
 		end)
 	end
