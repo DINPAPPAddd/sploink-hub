@@ -1,23 +1,21 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
----------------------------------------------------
--- SERVICES
----------------------------------------------------
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
 
-local ResetRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Reset")
-local UpgradeRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Upgrade")
+local Remotes = ReplicatedStorage:WaitForChild("Remotes")
+local UpgradeRemote = Remotes:WaitForChild("Upgrade")
+local ResetRemote = Remotes:WaitForChild("Reset")
 
 ---------------------------------------------------
--- WINDOW (ONLY ONCE)
+-- WINDOW
 ---------------------------------------------------
 local Window = Rayfield:CreateWindow({
-	Name = "Developer Studio",
-	LoadingTitle = "Loading...",
-	LoadingSubtitle = "All Systems Combined",
+	Name = "Developer Studio Hub",
+	LoadingTitle = "Loading Systems...",
+	LoadingSubtitle = "Full Test Build",
 	ConfigurationSaving = { Enabled = false }
 })
 
@@ -29,11 +27,10 @@ local RunesTab = Window:CreateTab("Runes", 4483362458)
 local AutoTab = Window:CreateTab("Auto", 4483362458)
 
 ---------------------------------------------------
--- UPGRADES
+-- UPGRADES SECTION
 ---------------------------------------------------
 
--- CRYSTALLIZE
-UpgradesTab:CreateSection("Crystallize (HIGHEST)")
+UpgradesTab:CreateSection("Crystallize")
 
 UpgradesTab:CreateButton({
 	Name = "Crystallize Reset",
@@ -84,7 +81,7 @@ UpgradesTab:CreateButton({
 ---------------------------------------------------
 UpgradesTab:CreateSection("Time Machine")
 
-local timeMachineUpgrades = {
+local timeUpgrades = {
 	{"Time Gain","Max","Time","Time"},
 	{"Turbo Time","Max","Time","Time"},
 	{"Rune Luck II","Max","Time","Time"},
@@ -95,7 +92,7 @@ local timeMachineUpgrades = {
 UpgradesTab:CreateButton({
 	Name = "Max Time Machine Upgrades",
 	Callback = function()
-		for _,v in ipairs(timeMachineUpgrades) do
+		for _,v in ipairs(timeUpgrades) do
 			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
 		end
 	end
@@ -114,22 +111,102 @@ UpgradesTab:CreateButton({
 })
 
 ---------------------------------------------------
--- RUNES
+-- ASCENSION (AP)
 ---------------------------------------------------
-local function createRuneToggle(name, getHitbox)
+UpgradesTab:CreateSection("Ascension (AP)")
+
+UpgradesTab:CreateButton({
+	Name = "Ascension Reset",
+	Callback = function()
+		ResetRemote:FireServer("Ascension")
+	end
+})
+
+local apUpgrades = {
+	{"Coin Multi III","Max","AP","Ascension Points"},
+	{"PP Multi","Max","AP","Ascension Points"},
+	{"XP Multi","Max","AP","Ascension Points"},
+	{"Max Roll III","Max","AP","Ascension Points"},
+	{"Min Roll II","Max","AP","Ascension Points"},
+	{"Extra Dice II","Max","AP","Ascension Points"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Ascension Upgrades",
+	Callback = function()
+		for _,v in ipairs(apUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- PRESTIGE (PP)
+---------------------------------------------------
+UpgradesTab:CreateSection("Prestige (PP)")
+
+UpgradesTab:CreateButton({
+	Name = "Prestige Reset",
+	Callback = function()
+		ResetRemote:FireServer("Prestige")
+	end
+})
+
+local ppUpgrades = {
+	{"Coin Multi II","Max","PP","Prestige Points"},
+	{"PP XP Multi","Max","PP","Prestige Points"},
+	{"Max Roll II","Max","PP","Prestige Points"},
+	{"Min Roll","Max","PP","Prestige Points"},
+	{"Extra Dice","Max","PP","Prestige Points"},
+	{"Walkspeed","Max","PP","Prestige Points"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Prestige Upgrades",
+	Callback = function()
+		for _,v in ipairs(ppUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- SMALL UPGRADES
+---------------------------------------------------
+UpgradesTab:CreateSection("Small Upgrades (Coins)")
+
+local smallUpgrades = {
+	{"Coin Gain","Max","Coins","Coins"},
+	{"Coin Multi","Max","Coins","Coins"},
+	{"Max Roll","Max","Coins","Coins"},
+}
+
+UpgradesTab:CreateButton({
+	Name = "Max Small Upgrades",
+	Callback = function()
+		for _,v in ipairs(smallUpgrades) do
+			UpgradeRemote:FireServer(v[1],v[2],v[3],v[4])
+		end
+	end
+})
+
+---------------------------------------------------
+-- RUNES SYSTEM
+---------------------------------------------------
+local function createRune(name, getHitbox)
 	local enabled = false
 
 	RunesTab:CreateToggle({
 		Name = name,
 		CurrentValue = false,
-		Callback = function(Value)
-			enabled = Value
+		Callback = function(v)
+			enabled = v
 
 			if enabled then
 				task.spawn(function()
 					while enabled do
-						local character = player.Character or player.CharacterAdded:Wait()
-						local hrp = character:WaitForChild("HumanoidRootPart")
+						local char = player.Character or player.CharacterAdded:Wait()
+						local hrp = char:WaitForChild("HumanoidRootPart")
 
 						local hitbox = getHitbox()
 						if hitbox then
@@ -137,7 +214,7 @@ local function createRuneToggle(name, getHitbox)
 							firetouchinterest(hrp, hitbox, 1)
 						end
 
-						task.wait()
+						task.wait(0.2)
 					end
 				end)
 			end
@@ -145,36 +222,36 @@ local function createRuneToggle(name, getHitbox)
 	})
 end
 
--- MAIN RUNES
-createRuneToggle("Basic Rune", function()
+RunesTab:CreateSection("Main Runes")
+
+createRune("Basic Rune", function()
 	local r = workspace.Runes:FindFirstChild("Basic")
 	return r and r:FindFirstChild("Hitbox")
 end)
 
-createRuneToggle("Roller Rune", function()
+createRune("Roller Rune", function()
 	local r = workspace.Runes:FindFirstChild("Roller")
 	return r and r:FindFirstChild("Hitbox")
 end)
 
-createRuneToggle("Qualities Rune", function()
+createRune("Qualities Rune", function()
 	local r = workspace.Runes:FindFirstChild("Qualities")
 	return r and r:FindFirstChild("Hitbox")
 end)
 
-createRuneToggle("Ancient Rune", function()
+createRune("Ancient Rune", function()
 	local r = workspace.Runes:FindFirstChild("Ancient")
 	return r and r:FindFirstChild("Hitbox")
 end)
 
--- EVENT RUNES
 RunesTab:CreateSection("Event Runes")
 
-createRuneToggle("Celebration Rune", function()
+createRune("Celebration Rune", function()
 	local r = workspace.Runes:FindFirstChild("Celebration")
 	return r and r:FindFirstChild("Hitbox")
 end)
 
-createRuneToggle("250K Rune", function()
+createRune("250K Rune", function()
 	local r = workspace.Runes:FindFirstChild("250K")
 	return r and r:FindFirstChild("Hitbox")
 end)
@@ -182,71 +259,38 @@ end)
 ---------------------------------------------------
 -- AUTO SYSTEM
 ---------------------------------------------------
-AutoTab:CreateSection("Auto")
-
-local glyphEnabled = false
-local diceEnabled = false
-local tempoEnabled = false
-
-AutoTab:CreateToggle({
-	Name = "Auto Roll Glyph",
-	CurrentValue = false,
-	Callback = function(Value)
-		glyphEnabled = Value
-
-		if glyphEnabled then
-			task.spawn(function()
-				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RollGlyph")
-
-				while glyphEnabled do
-					pcall(function()
-						remote:InvokeServer()
-					end)
-					task.wait(2)
-				end
-			end)
-		end
-	end
-})
+AutoTab:CreateSection("Auto Systems")
 
 AutoTab:CreateToggle({
 	Name = "Auto Roll Dice",
 	CurrentValue = false,
-	Callback = function(Value)
-		diceEnabled = Value
+	Callback = function(v)
+		task.spawn(function()
+			local remote = Remotes:WaitForChild("Roll")
 
-		if diceEnabled then
-			task.spawn(function()
-				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Roll")
-
-				while diceEnabled do
-					pcall(function()
-						remote:FireServer()
-					end)
-					task.wait(2)
-				end
-			end)
-		end
+			while v do
+				pcall(function()
+					remote:FireServer()
+				end)
+				task.wait(2)
+			end
+		end)
 	end
 })
 
 AutoTab:CreateToggle({
-	Name = "Auto Tempo Reset",
+	Name = "Auto Glyph Roll",
 	CurrentValue = false,
-	Callback = function(Value)
-		tempoEnabled = Value
+	Callback = function(v)
+		task.spawn(function()
+			local remote = Remotes:WaitForChild("RollGlyph")
 
-		if tempoEnabled then
-			task.spawn(function()
-				local remote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("Reset")
-
-				while tempoEnabled do
-					pcall(function()
-						remote:FireServer("Time Machine")
-					end)
-					task.wait(2)
-				end
-			end)
-		end
+			while v do
+				pcall(function()
+					remote:InvokeServer()
+				end)
+				task.wait(2)
+			end
+		end)
 	end
 })
